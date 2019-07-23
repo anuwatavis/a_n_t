@@ -1,0 +1,38 @@
+#define outputA 8
+#define outputB 9
+bool resetState = false;
+bool first = true;
+int counter = 0;
+int aState;
+int aLastState;
+void setup() {
+  pinMode (outputA, INPUT_PULLUP);
+  pinMode (outputB, INPUT_PULLUP);
+  pinMode(6, INPUT_PULLUP);
+  pinMode(7, INPUT_PULLUP);
+  Serial.begin (115200);
+  aLastState = digitalRead(outputA);
+}
+void loop() {
+  count();
+  if (digitalRead(7) == 0) {
+    delay(10000);
+    Serial.println("done");
+    counter = 0 ;
+    aLastState = digitalRead(outputA);
+  }
+}
+void count() {
+  if (counter >= 0) {
+    aState = digitalRead(outputA);
+    if (aState != aLastState) {
+      if (digitalRead(outputB) != aState) {
+        counter ++;
+      } else {
+        counter --;
+      }
+      Serial.println(counter);
+    }
+    aLastState = aState;
+  }
+}
