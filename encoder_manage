@@ -1,0 +1,81 @@
+//23-JUL-2019 11:25
+#define outputA 8
+#define outputB 9
+#define solinoid 6
+#define limitswitch 7
+int counter = 0;
+int aState;
+int aLastState;
+//---
+bool switchState = false;
+bool onlineState = false;
+bool resetState = false;
+bool overloadState = false;
+bool solinoidState = false;
+void setup() {
+  pinMode (outputA, INPUT_PULLUP);
+  pinMode (outputB, INPUT_PULLUP);
+  pinMode(solinoid, INPUT_PULLUP);
+  pinMode(limitswitch, INPUT_PULLUP);
+  Serial.begin (115200);
+  aLastState = digitalRead(outputA);
+}
+void loop() {
+  count();
+  //limit switch state
+  if (digitalRead(7) == 0) {
+    switchState = true;
+  } else {
+    switchState = false;
+  }
+  //solinoid state
+  if (digitalRead(6) == 1) {
+    solinoidState = true;
+  } else {
+    solinoidState = false;
+  }
+  //ONLINE STATE
+  if (counter > -1) {
+    onlineState = true;
+  } else {
+    onlineState = false;
+  }
+  //RESER STATE
+  if (counter < -1) {
+    resetState = true;
+  } else {
+    resetState = false;
+  }
+  //SOLINOID STATE
+  if (digitalRead(6) == 1) {
+    solinoidState = true;
+  } else {
+    solinoidState = false;
+  }
+  //OVERLOAD STATE
+  if (solinoidState) {
+    overloadState = false;
+  } else {
+    overloadState = true;
+  }
+  
+}
+void count() {
+  aState = digitalRead(outputA);
+  if (aState != aLastState) {
+    if (digitalRead(outputB) != aState) {
+      counter ++;
+    } else {
+      counter --;
+    }
+    Serial.println(counter);
+    Serial.print("online state : ");
+    Serial.println(onlineState);
+    Serial.print("reset state : ");
+    Serial.println(resetState);
+    Serial.print("overload state : ");
+    Serial.println(overloadState);
+
+  }
+  aLastState = aState;
+}
